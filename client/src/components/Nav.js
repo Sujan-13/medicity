@@ -1,14 +1,13 @@
+import { Link } from "react-router-dom";
+
 function Nav(){
     return(
     <nav>
-        <div class="logo">Mediciti</div>
+        <Link to={"/"}><div class="logo">Medicity</div></Link>
         <ul class="menus">
-            <li class="menu">Home</li>
-            <li class="menu">Contact Us</li>
-            <li class="menu">Find a doctors</li>
             <div class="buttons">
-                <button class="login">Login</button>
-                <button class="register">Sign Up</button>
+               <Link to={"/login"}> <button class="login">Login</button></Link>
+               <Link to={"/signup"}> <button class="register">Sign Up</button></Link>
             </div>
         </ul>
     </nav>   

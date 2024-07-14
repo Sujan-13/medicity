@@ -2,7 +2,7 @@ import Home from "./pages/home";
 import Footer from "./components/Footer";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
-import {  } from "./components/Nav";
+import Nav from "./components/Nav";
 import {BrowserRouter,Route,Routes,useNavigate} from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import { useEffect, useState } from "react";
@@ -38,7 +38,6 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/dashboard" element={<Dashboard/>} />
       </Routes>
-    <Footer />
 
     </div>
   );

@@ -1,6 +1,7 @@
 import  Formbody  from "../components/Formbody";
 import { useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
+import  "../styles/form.css";
 
 
 function Login(){
