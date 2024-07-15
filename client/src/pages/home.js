@@ -9,7 +9,7 @@ function Home(){
             <img src="https://images.unsplash.com/photo-1512102438733-bfa4ed29aef7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzR8fG1lZGljYWwlMjBob3NwaXRhbHxlbnwwfHwwfHx8MA%3D%3D" alt=""/>
         </div>
         <div class="doctor-search">
-            <h1>Welcome to Mediciti</h1>
+            <h1>Welcome to Medicity</h1>
             <p>Find the best medical services near you</p>
             <Link to={"/login"}><button class="search-btn">Search for Doctors</button></Link>
             <div class="doctors">
