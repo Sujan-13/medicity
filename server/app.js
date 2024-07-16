@@ -80,25 +80,34 @@ passport.deserializeUser(function(user, cb) {
   
 app.post("/api/signup",async (req,res)=>{
     usrInp=req.body;
-    let name=usrInp.username;
-    let email=usrInp.email;
-    let password=await bcrypt.hash(usrInp.password,10);
-    const insertQuery=`
+    console.log(usrInp);
+    const{firstname,lastname,dob,gender,address,phone,email}=usrInp;
+    const password=await bcrypt.hash(usrInp.password,10);
+    const userinsertQuery=`
     INSERT INTO users VALUES
-    ($1::text,$2::text,$3::text);
+    ($1::text,$2::text);
     `;
+
+    const patientInsertQuery=`
+    INSERT INTO Patient(FirstName,LastName,DOB,gender,address,phone,email) VALUES
+    ($1,$2,$3,$4,$5,$6,$7);
+    `
 
     try {
       const client=await pool.connect();
       console.log("Connection Success");
         try {
-          const query=await client.query(insertQuery,[email,password,name]);
-          console.log("Query Success",query);
+          await client.query('BEGIN');
+          const query=await client.query(userinsertQuery,[email,password]);
+          console.log("Query Success");
+          const secondquery=await client.query(patientInsertQuery,[firstname,lastname,dob,gender,address,phone,email]);
+          console.log("Query Success");
+          await client.query('COMMIT');
+          console.log("Transaction committed successfully!");
           const user={
             id:usrInp.email,
             username:usrInp.email
           };
-          console.log(user.id);
           req.logIn(user,(err)=>{
             if (err) {
             console.log(err);  
@@ -108,13 +117,12 @@ app.post("/api/signup",async (req,res)=>{
               res.status(200).send({"authenticated":true});           
             }
           })
-          // res.json({message:"Query Success!"});
-          client.release();
-          // pool.end();
-
         } catch (error) {
-          console.error("Query Error",error);
-           res.send(error);
+          await client.query('ROLLBACK');
+          console.log("Transaction not committed due to errors: " + error);
+          res.send(error);
+        } finally {
+          client.release();
         }
     } catch (error) {
       console.error("Connection Error",error);
@@ -163,6 +171,43 @@ app.get("/api/check-session",(req,res)=>{
     res.send({"authenticated":false});           
   }
 });
+
+app.get("/api/fetch-data",async (req,res)=>{
+  const user=req.user;
+  console.log(user);
+  
+
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT firstname,lastname,TO_CHAR(dob, 'YYYY-MM-DD') AS dob,gender,address,phone,email FROM patient
+        WHERE email=$1;
+        `,[(user.username)||(user.id)]);
+        const result=response.rows[0];
+        console.log(result);
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+
+})
+
+app.get("/api/logout",(req,res)=>{
+    req.logOut((err)=>{
+      if(err){
+        res.json(err);
+      }
+      res.json({"done":true});
+    });
+})
 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);

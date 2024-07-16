@@ -2,13 +2,19 @@ import "../styles/form.css";
 import { useState } from "react";
 import Formbody from "../components/Formbody";
 import { Link,useNavigate } from "react-router-dom";
-
+import Nav from "../components/Nav";
 
 
 function Signup() {
     const navigate=useNavigate();
+    const items=[["FirstName","text"],["LastName","text"],["DOB","date"], ["Gender","text"],["Address","text"],["Phone","text"], ["Email","email"], ["Password","password"]];
     const [formData, SetformData]=useState({
-        username:"",
+        firstname:"",
+        lastname:"",
+        dob:"",
+        gender:"",
+        address:"",
+        phone:"",
         email:"",
         password:""
     });
@@ -50,6 +56,7 @@ function Signup() {
     }
 
     async function handleSubmit(e) {
+      console.log(formData);
         e.preventDefault();
         if(validatePassword===''){
         try {
@@ -74,10 +81,11 @@ function Signup() {
         }}
         };
  
-    const items=[["Username","text"], ["Email","email"], ["Password","password"]];
             return(
-                
+              <div>
+              <Nav />
                 <main>
+                
                 <div class="logo">
                 <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTOIsLtdQPu_wKkuK2cptqnjlgvV1kKeWLF7Ki6HKvqTpZVglh-" alt="" />
                </div>
@@ -86,12 +94,12 @@ function Signup() {
                     <form class="main" onSubmit={handleSubmit}>
                       
                         {items.map((item,index)=>{
-                            var member=(item[0].toLowerCase());                            
+                            var member=(item[0].toLowerCase());      
                             return(                          
                              <div>
                             <Formbody key={index} field={item[0]} name={member} type={item[1]} value={formData[member]} handleChange={handleChange} />
-                             {index==1 && !validateEmail && <p className="warning">Email already taken</p>}
-                             {index==2 && <p className="warning">{validatePassword}</p>}
+                             {index==6 && !validateEmail && <p className="warning">Email already taken</p>}
+                             {index==7 && <p className="warning">{validatePassword}</p>}
                              </div>
                             );
                         })}
@@ -100,6 +108,7 @@ function Signup() {
                      </form>
                      <p>Already have an account? <Link to="/login">Log In</Link></p>
                 </main>
+                </div>
             );
 }
 

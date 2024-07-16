@@ -2,6 +2,7 @@ import  Formbody  from "../components/Formbody";
 import { useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import  "../styles/form.css";
+import Nav from "../components/Nav";
 
 
 function Login(){
@@ -48,6 +49,8 @@ function Login(){
     const items=[["Email","email"], ["Password","password"]];
 
     return(
+        <div>
+        <Nav />    
         <main>
         <div class="logo">
             <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTOIsLtdQPu_wKkuK2cptqnjlgvV1kKeWLF7Ki6HKvqTpZVglh-" alt="" />
@@ -67,6 +70,7 @@ function Login(){
         <p>Don't have an account? <Link to="/signup">Register</Link></p>
         {/* <p>Forgot your password? <a href="/forgot-password">Reset</a></p> */}
     </main>
+    </div>
     );
 };
 

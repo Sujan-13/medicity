@@ -6,32 +6,15 @@ import Nav from "./components/Nav";
 import {BrowserRouter,Route,Routes,useNavigate} from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import { useEffect, useState } from "react";
+import useSessionManagement from "./modules/useSession";
 function App() {
   const [session,setsession]=useState(false);
   const navigate=useNavigate();
-  useEffect(()=>{
-    const sessionManagement=async ()=>{ 
-    try {
-      const response=await fetch("http://localhost:3001/api/check-session",{
-        "method":"GET",
-        credentials: 'include'
-         });
-      const result=await response.json();
-      if (result.authenticated) {
-        navigate("/dashboard");
-      }
-      console.log(result);
-    } catch (error) {
-     console.error("Fetch Error",error); 
-    }
-    }
-    sessionManagement();
-  },[])
 
+  useSessionManagement(navigate, "/dashboard");
 
   return (
     <div id="page-container">
-    <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup/>} />

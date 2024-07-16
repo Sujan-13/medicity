@@ -1,9 +1,12 @@
 import "../styles/home.css";
 import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
+import Nav from "../components/Nav";
+
 function Home(){
     return(
     <div>
+    <Nav />
     <section class="hero">
         <div class="bg-image">
             <img src="https://images.unsplash.com/photo-1512102438733-bfa4ed29aef7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzR8fG1lZGljYWwlMjBob3NwaXRhbHxlbnwwfHwwfHx8MA%3D%3D" alt=""/>
