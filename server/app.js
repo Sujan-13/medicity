@@ -7,6 +7,7 @@ const LocalStrategy=require("passport-local");
 const bcrypt=require("bcrypt");
 const session=require("express-session");
 const crypto=require("crypto");
+const {pool ,initialDb}=require("./db")
 require("dotenv").config();
 
 const PORT=process.env.PORT || 3001;
@@ -14,6 +15,8 @@ const PORT=process.env.PORT || 3001;
 const secretKey=crypto.randomBytes(64).toString("hex");
 
 const app=express();
+
+initialDb();
 
 app.use(cors({
     origin:"http://localhost:3000",
@@ -36,7 +39,7 @@ passport.use(new LocalStrategy({
   usernameField:"email"
 },async function verify(email,password,cb){
   console.log("Authenticating",email);
-  const selectQuery=`SELECT email,password FROM users WHERE email=$1`;
+  const selectQuery=`SELECT Email,passwoRd FROM users WHERE email=$1`;
   try {
   const result=await pool.query(selectQuery,[email]);
   const user=result.rows[0];
@@ -73,13 +76,6 @@ passport.deserializeUser(function(user, cb) {
   });
 });
 
-
-const pool = new Pool({
-    host: process.env.PG_HOST,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    database: process.env.PG_DATABASE
-  });
 
   
 app.post("/api/signup",async (req,res)=>{
