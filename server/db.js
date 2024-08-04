@@ -10,6 +10,8 @@ const pool = new Pool({
     port:6543
   });
 
+  // postgresql://postgres.fthuzrqtfxwlmvlyqopb:[YOUR-PASSWORD]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres
+
   // const pool = new Pool({
   //   host: "localhost",
   //   user:"postgres",
@@ -26,9 +28,9 @@ async function initialDb(){
         console.log("Connection Success!");
         try {
           await client.query('BEGIN');
-          await client.query(`
-          DROP TABLE Doctor,Appointment,Billing;
-          `)
+          // await client.query(`
+          // DROP TABLE Doctor,Appointment,Billing;
+          // `)
           
           await client.query(`
           CREATE TABLE IF NOT EXISTS Doctor(
@@ -80,15 +82,15 @@ async function initialDb(){
         );
           `);
     
-          await client.query(`
-          INSERT INTO Doctor(DoctorID,FirstName,LastName,Specialization,Email,Phone)
-          VALUES(301,'Umesh','Jha','Neurology','jhaumesh@gmail.com','9864380976'),
-          (302,'Rakshya','Manandhar','Paediatrics','rakumanandhar@yahoo.com','9807853651'),
-          (303,'Samarpan','Subedi','Cardiology','samar678@gmail.com','9876532109'),
-          (304,'Randip','Shrestha','Nephrology','shresthrandip@gmail.com','9765937641'),
-          (305,'Ishita','Adhikari','Dermatology','ishaadh@gmail.com','9653289647'),
-          (306,'Ishan','Thapa','Gastroenterology','thapaishan@gmail.com','9875498764');
-          `);
+          // await client.query(`
+          // INSERT INTO Doctor(DoctorID,FirstName,LastName,Specialization,Email,Phone)
+          // VALUES(301,'Umesh','Jha','Neurology','jhaumesh@gmail.com','9864380976'),
+          // (302,'Rakshya','Manandhar','Paediatrics','rakumanandhar@yahoo.com','9807853651'),
+          // (303,'Samarpan','Subedi','Cardiology','samar678@gmail.com','9876532109'),
+          // (304,'Randip','Shrestha','Nephrology','shresthrandip@gmail.com','9765937641'),
+          // (305,'Ishita','Adhikari','Dermatology','ishaadh@gmail.com','9653289647'),
+          // (306,'Ishan','Thapa','Gastroenterology','thapaishan@gmail.com','9875498764');
+          // `);
 
           await client.query(`
           CREATE TABLE IF NOT EXISTS users(

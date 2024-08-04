@@ -127,9 +127,7 @@ app.post("/api/signup",async (req,res)=>{
     } catch (error) {
       console.error("Connection Error",error);
        res.send("Connection Error",error);
-    }
-
-   
+    }   
 });
 
 app.post('/api/login', (req, res, next) => {
@@ -172,11 +170,9 @@ app.get("/api/check-session",(req,res)=>{
   }
 });
 
-app.get("/api/fetch-data",async (req,res)=>{
+app.get("/api/profile-fetch-data",async (req,res)=>{
   const user=req.user;
   console.log(user);
-  
-
   try {
     const client=await pool.connect();
     console.log("Connection Success");
@@ -186,7 +182,6 @@ app.get("/api/fetch-data",async (req,res)=>{
         WHERE email=$1;
         `,[(user.username)||(user.id)]);
         const result=response.rows[0];
-        console.log(result);
         res.send(result);
       } catch (error) {
         console.log("Transaction not committed due to errors: " + error);
@@ -197,7 +192,34 @@ app.get("/api/fetch-data",async (req,res)=>{
     console.error("Connection Error",error);
      res.send("Connection Error",error);
   }
+})
 
+app.get("/api/appointment-fetch-data",async (req,res)=>{
+  const user=req.user;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT firstname,lastname,TO_CHAR(appointmentdate, 'YYYY-MM-DD') AS appointmentdate,specialization FROM appointment
+        INNER JOIN Doctor
+        ON Appointment.doctorid=Doctor.doctorid
+        WHERE patientid=(
+          SELECT patientid FROM Patient
+          WHERE email=$1
+        );
+        `,[(user.username)||(user.id)]);
+        const result=response.rows;
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
 })
 
 app.get("/api/logout",(req,res)=>{

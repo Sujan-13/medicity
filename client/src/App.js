@@ -1,8 +1,8 @@
 import Home from "./pages/home";
-import Footer from "./components/Footer";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
-import Nav from "./components/Nav";
+import Appointment from "./pages/appointment";
+import Profile from "./pages/profiile";
 import {BrowserRouter,Route,Routes,useNavigate} from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import { useEffect, useState } from "react";
@@ -19,8 +19,13 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup/>} />
         <Route path="/login" element={<Login/>} />
-        <Route path="/dashboard" element={<Dashboard/>} />
+        <Route path="/dashboard" element={<Dashboard/>} >
+            <Route index element={<Profile />} />
+            <Route path="profile" element={<Profile/>} />
+            <Route path="appointment" element={<Appointment/>} />
+        </Route>
       </Routes>
+      
 
     </div>
   );
