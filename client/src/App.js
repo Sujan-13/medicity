@@ -2,6 +2,7 @@ import Home from "./pages/home";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Appointment from "./pages/appointment";
+import Book from "./pages/book";
 import Profile from "./pages/profiile";
 import {BrowserRouter,Route,Routes,useNavigate} from "react-router-dom";
 import Dashboard from "./pages/dashboard";
@@ -23,6 +24,7 @@ function App() {
             <Route index element={<Profile />} />
             <Route path="profile" element={<Profile/>} />
             <Route path="appointment" element={<Appointment/>} />
+            <Route path="book" element={<Book />} />
         </Route>
       </Routes>
       

@@ -27,7 +27,9 @@ label {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="date"]
+ {
   padding: 10px;
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -65,7 +67,7 @@ footer{
   border-top-right-radius: 10px; */
   /* margin-top: 2%; */
   .social-media{
-      font-size: 20px;
+     font-size: 20px;
      display: flex;
      align-items: center;
      justify-content: center;

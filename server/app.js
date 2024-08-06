@@ -222,6 +222,55 @@ app.get("/api/appointment-fetch-data",async (req,res)=>{
   }
 })
 
+app.get("/api/book-fetch-specialization",async (req,res)=>{
+  const user=req.user;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT specialization FROM Doctor
+        `);
+        const result=response.rows;
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.post("/api/book-fetch-doctor",async (req,res)=>{
+  const user=req.user;
+  console.log(req.body);
+  console.log(req.body.specialization);
+  console.log("HERE");
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT firstname,lastname,specialization FROM Doctor
+        WHERE specialization=$1
+        `,[req.body.specialization]);
+        const result=response.rows;
+        console.log(result);
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
 app.get("/api/logout",(req,res)=>{
     req.logOut((err)=>{
       if(err){

@@ -82,3 +82,15 @@ input{
 .form-group label {
   margin-right: 10px;
 }
+
+.dashboard-form-text{
+  label{
+  font-size: medium;
+  font-family: Arial, Helvetica, sans-serif;
+  }
+  select{
+    padding: 10px;
+    width:fit-content;
+    margin-right:20px;
+  }
+}

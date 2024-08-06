@@ -37,7 +37,6 @@ function Dashboard(){
         <div className="sidebar">
         <div className="sidebar-content">
         {sidecontent.map((item,index)=>{
-            {console.log(item.toLowerCase())}
             return <Link to={item.toLowerCase()} ><Sidebar field={item} key={index} /></Link> 
         })}
         </div>

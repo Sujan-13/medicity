@@ -1,5 +1,7 @@
-import { useState,useEffect } from "react";
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import useFetchData from "../modules/useFetchData";
 function Appointment() {
 
     const [appointment,setAppointment]=useState([{
@@ -8,52 +10,14 @@ function Appointment() {
         specialization:"",
         appointmentdate:""
     }]);
+    const {data,error}=useFetchData("appointment-fetch-data");
 
-    // setAppointment([{
-    //     firstname:"Sujan",
-    //     lastname:"Gupta",
-    //     specialisation:"Necromancy",
-    //     appointmentdate:"2020-09-10"
-    // },
-    // {
-    //     firstname:"Ritesh",
-    //     lastname:"Gupta",
-    //     specialisation:"Ullu",
-    //     appointmentdate:"2020-09-10"
-    // }]);
-
-    // const [appointment] = useState([{
-    //     firstname: "Sujan",
-    //     lastname: "Gupta",
-    //     specialisation: "Necromancy",
-    //     appointmentdate: "2020-09-10"
-    // },
-    // {
-    //     firstname: "Ritesh",
-    //     lastname: "Gupta",
-    //     specialisation: "Ullu",
-    //     appointmentdate: "2020-09-10"
-    // }]);
-
-        
-    useEffect(()=>{
-        const fetchData=async ()=>{
-            try { 
-                const response = await fetch("http://localhost:3001/api/appointment-fetch-data", {
-                method: "GET",
-                credentials: "include",
-              });
-              const result = await response.json();
-              console.log(result);
-              setAppointment(result);
-            }
-            catch(error){
-                console.error(error);
-            }
+    const navigate=useNavigate();
+    useEffect(() => {
+        if (data) {
+          setAppointment(data); 
         }
-        fetchData();
-    },[]);
-
+      }, [data]);
 
     return(
         <div>
@@ -84,7 +48,7 @@ function Appointment() {
                 </tbody>
                 </table>
             </div>
-            <button className="side-btn">Book Appointment</button>
+          <Link to={"/dashboard/book"}><button className="side-btn">Book Appointment</button></Link>
         </div>
     );
 }
