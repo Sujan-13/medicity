@@ -7,15 +7,14 @@ import Dropdown from "../components/Dropdown";
 function Book() {
     const [loading,setLoading]=useState(false);
     const [specializationData,setSpecializationData]=useState([]);
+    const [validate,setvalidate]=useState(true);
     const [selectSpecialization,setselectSpecialization]=useState({
         specialization:""
     });
-    const [appointment,setAppointment]=useState([{
-        firstname:"",
-        lastname:"",
-        specialization:"",
+    const [appointment,setAppointment]=useState({
+        doctorid:"",
         appointmentdate:""
-    }]);
+    });
     const [doctorData,setdoctorData]=useState([{
         doctorid:"",
         firstname:"",
@@ -67,19 +66,48 @@ function Book() {
 
   async function handleChange(e){
     let {name,value}=e.target;
-    if(name="specialization"){
+    if(name==="specialization"){
     setLoading(false);
         setselectSpecialization({
            "specialization":value
         });
     }
-    
-    if(name="doctors"){
 
+    if (name==="doctorid"|| name==="appointmentdate") {
+        console.log(name,value);
+        console.log("HERE");
+        setAppointment({
+        ...appointment,
+        [name]:value
+        });
     }
-    
+    }
 
+    async function handleSubmit(e) {
+        e.preventDefault();
+            try {
+              const response= await fetch("http://localhost:3001/api/post-appointment",{
+                method:"POST",
+                credentials: 'include',
+                headers:{
+                  "Content-type":"application/json"
+                },
+                body:JSON.stringify(appointment)
+              });
+                const result= await response.json();
+                console.log(result);
+                if (result.code==23505) {
+                    setvalidate(false);
+                }
+                if (result.done) {
+                  navigate("/dashboard/appointment");
+                }
+            } catch (error) {
+                setvalidate(false);
+                console.error("Error",error);         
+            }
     }
+
 
 
     return(
@@ -98,17 +126,17 @@ function Book() {
         </select> 
         </div>
                 {loading && 
-                <div>
+                <form onSubmit={handleSubmit}>
                 <div className="form-group dashboard-form-text">
                 <label for="doctors">Choose Doctor:</label>
-                <select name="doctors" id="doctors" onChange={handleChange}>
+                <select name="doctorid" id="doctors" onChange={handleChange}>
                 <option>--Doctors--</option>
                     {
                         doctorData.map((item,index)=>{
+                            console.log(item);
                             const field=item.firstname+" "+item.lastname+", "+item.specialization;
-                            console.log(field)
                             return(
-                                <Dropdown field={field} key={index} />
+                                <Dropdown field={field} value={item.doctorid} key={index} />
                             )
                         })
                     }
@@ -116,10 +144,16 @@ function Book() {
                 </div>
                 <div className="form-group dashboard-form-text">
                 <label for="appointmentDate">Choose Appointment Date:</label>
-                <input type="date" min={new Date().toISOString().split('T')[0]} />
+                <input name="appointmentdate" type="date" min={new Date().toISOString().split('T')[0]} onChange={handleChange} />
                 </div>
 
+                <div className="form-group dashboard-form-text">
+                <button type="submit" className="side-btn">Book</button>
                 </div>
+
+                {!validate && <h3 className="warning">Try again!!</h3> }
+
+                </form>
                 }
         </div>
     );

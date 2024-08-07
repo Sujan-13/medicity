@@ -229,7 +229,7 @@ app.get("/api/book-fetch-specialization",async (req,res)=>{
     console.log("Connection Success");
       try {
         const response=await client.query(`
-        SELECT specialization FROM Doctor
+        SELECT DISTINCT specialization FROM Doctor
         `);
         const result=response.rows;
         res.send(result);
@@ -254,7 +254,7 @@ app.post("/api/book-fetch-doctor",async (req,res)=>{
     console.log("Connection Success");
       try {
         const response=await client.query(`
-        SELECT firstname,lastname,specialization FROM Doctor
+        SELECT doctorID,firstname,lastname,specialization FROM Doctor
         WHERE specialization=$1
         `,[req.body.specialization]);
         const result=response.rows;
@@ -270,6 +270,48 @@ app.post("/api/book-fetch-doctor",async (req,res)=>{
      res.send("Connection Error",error);
   }
 })
+
+app.post("/api/post-appointment",async (req,res)=>{
+    usrInp=req.body;
+    getuser=req.user;
+    console.log(usrInp);
+    const {doctorid,appointmentdate}=usrInp;
+    const user=(getuser.username)||(getuser.id);
+    const getpatientid=`
+    SELECT patientid FROM patient
+    WHERE email=$1;
+    `;
+
+    const insertappointmentquery=`
+    INSERT INTO Appointment(doctorid,patientid,appointmentdate) VALUES
+    ($1,$2,$3);
+    `
+
+    try {
+      const client=await pool.connect();
+      console.log("Connection Success");
+        try {
+          await client.query('BEGIN');
+          const response=await client.query(getpatientid,[user]);
+          console.log(response.rows[0]);
+          const patientid=response.rows[0].patientid;
+          const secondquery=await client.query(insertappointmentquery,[doctorid,patientid,appointmentdate]);
+          console.log("Query Success");
+          await client.query('COMMIT');
+          console.log("Transaction committed successfully!");
+              res.status(200).send({"done":true});           
+        } catch (error) {
+          await client.query('ROLLBACK');
+          console.log("Transaction not committed due to errors: " + error);
+          res.send(error);
+        } finally {
+          client.release();
+        }
+    } catch (error) {
+      console.error("Connection Error",error);
+       res.send("Connection Error",error);
+    }   
+});
 
 app.get("/api/logout",(req,res)=>{
     req.logOut((err)=>{

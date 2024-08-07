@@ -1,6 +1,6 @@
 function Dropdown(props) {
     return(
-        <option value={props.field}>{props.field}</option>
+        <option value={props.value}>{props.field}</option>
     );
 }
 

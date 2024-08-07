@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import useFetchData from "../modules/useFetchData";
-function Appointment() {
+function Billing() {
 
     const [appointment,setAppointment]=useState([{
         firstname:"",
