@@ -81,6 +81,24 @@ async function initialDb(){
             FOREIGN KEY(AppointmentID) REFERENCES Appointment(AppointmentID) ON DELETE CASCADE
         );
           `);
+
+          await client.query(`
+          CREATE OR REPLACE FUNCTION insertbill()
+          RETURNS TRIGGER AS $$
+          BEGIN
+          INSERT INTO Billing(Amount,BillingStatus,AppointmentID) VALUES
+          (500,'false',NEW.AppointmentID);
+          RETURN NEW;
+          END;
+          $$ LANGUAGE plpgsql;
+          `)
+
+          await client.query(`
+          CREATE OR REPLACE TRIGGER insertBills
+          BEFORE INSERT ON Appointment
+          FOR EACH ROW
+          EXECUTE FUNCTION insertbill();
+          `)
     
           //  await client.query(`
           //  INSERT INTO Doctor (DoctorID, FirstName, LastName, Specialization, Email, Phone)

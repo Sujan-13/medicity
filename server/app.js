@@ -222,6 +222,61 @@ app.get("/api/appointment-fetch-data",async (req,res)=>{
   }
 })
 
+app.get("/api/bill-fetch-data",async (req,res)=>{
+  const user=req.user;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT firstname,lastname,TO_CHAR(appointmentdate, 'YYYY-MM-DD') AS appointmentdate,specialization,amount,billingstatus,billingid FROM appointment
+        INNER JOIN Doctor
+        ON Appointment.doctorid=Doctor.doctorid
+        INNER JOIN Billing
+        ON Appointment.AppointmentID=Billing.AppointmentID
+        WHERE patientid=(
+          SELECT patientid FROM Patient
+          WHERE email=$1
+        );
+        `,[(user.username)||(user.id)]);
+        const result=response.rows;
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.post("/api/bill-update",async (req,res)=>{
+  const id=req.body;
+  console.log(id.billingid);
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        UPDATE Billing
+        SET billingstatus='true'
+        WHERE billingid=$1
+        ;
+        `,[(id.billingid)]);
+        res.send({done:true});
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
 app.get("/api/book-fetch-specialization",async (req,res)=>{
   const user=req.user;
   try {
