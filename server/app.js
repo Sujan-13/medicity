@@ -8,6 +8,7 @@ const bcrypt=require("bcrypt");
 const session=require("express-session");
 const crypto=require("crypto");
 const {pool ,initialDb}=require("./db")
+const path = require('path');
 require("dotenv").config();
 
 const PORT=process.env.PORT || 3001;
@@ -15,8 +16,9 @@ const PORT=process.env.PORT || 3001;
 const secretKey=crypto.randomBytes(64).toString("hex");
 
 const app=express();
-
 initialDb();
+
+app.use(express.static(path.join(__dirname, '../client/build')));
 
 app.use(cors({
     origin:"http://localhost:3000",
@@ -683,6 +685,10 @@ app.get("/api/logout",(req,res)=>{
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ message: 'Internal server error', error: err });
+});
+
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
 app.listen(PORT,()=>{
