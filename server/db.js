@@ -114,6 +114,14 @@ async function initialDb(){
           EXECUTE FUNCTION insertIntoUsers();
           `)
 
+          await client.query(`
+          CREATE TABLE session (
+            sid VARCHAR PRIMARY KEY,
+            sess JSON NOT NULL,
+            expire TIMESTAMP NOT NULL
+          );
+          `);
+
           await client.query('COMMIT');
           console.log("Transaction committed successfully!");
         } catch (error) {

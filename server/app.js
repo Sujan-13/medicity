@@ -6,12 +6,13 @@ const passport=require("passport");
 const LocalStrategy=require("passport-local");
 const bcrypt=require("bcrypt");
 const session=require("express-session");
+const PgSession = require("connect-pg-simple")(session);
 const crypto=require("crypto");
 const {pool ,initialDb}=require("./db")
 const path = require('path');
 require("dotenv").config();
 
-const PORT=process.env.PORT || 3001;
+const PORT=process.env.PORT || 3000;
 
 const secretKey=crypto.randomBytes(64).toString("hex");
 
@@ -30,6 +31,10 @@ app.use(bodyParser.json());
 
 
 app.use(session({
+  store: new PgSession({
+     pool: pool,
+     tableName:'session'
+    }),
   secret: secretKey,
   resave: false,
   saveUninitialized: false,
@@ -45,7 +50,6 @@ passport.use(new LocalStrategy({
   try {
   const result=await pool.query(selectQuery,[email]);
   const user=result.rows[0];
-  console.log(user);
   if(result.rows.length===0){
     console.log("No user found");
     return cb(null,false,{message:"Incorrect Username!"});}
@@ -82,7 +86,6 @@ passport.deserializeUser(function(user, cb) {
   
 app.post("/api/signup",async (req,res)=>{
     usrInp=req.body;
-    console.log(usrInp);
     const{firstname,lastname,dob,gender,address,phone,email}=usrInp;
     const password=await bcrypt.hash(usrInp.password,10);
     const userinsertQuery=`
@@ -143,7 +146,6 @@ app.post('/api/login', (req, res, next) => {
       return res.redirect('/failure');
     }
     req.logIn(user, (err) => {
-      console.log(user);
       if (err) {
         console.error('Login error:', err);
         return next(err);
@@ -163,7 +165,6 @@ app.get("/failure",(req,res)=>{
 })
 
 app.get("/api/check-session",(req,res)=>{
-  console.log("checking");
   if (req.isAuthenticated()) {
     res.send({"authenticated":true});           
   }
@@ -199,7 +200,6 @@ app.get("/api/check-usertype",async (req,res)=>{
 
 app.get("/api/profile-fetch-data",async (req,res)=>{
   const user=req.user;
-  console.log(user);
   try {
     const client=await pool.connect();
     console.log("Connection Success");
@@ -377,7 +377,6 @@ app.get("/api/bill-fetch-data",async (req,res)=>{
 
 app.post("/api/bill-update",async (req,res)=>{
   const id=req.body;
-  console.log(id.billingid);
   try {
     const client=await pool.connect();
     console.log("Connection Success");
@@ -405,7 +404,6 @@ app.post("/api/update-doctor",async (req,res)=>{
   const {doctorid,email,phone,salary}=usrInp;
   try {
     const client=await pool.connect();
-    console.log("Connection Success update-dioctor");
       try {
         await client.query('BEGIN');
        
@@ -443,7 +441,6 @@ app.post("/api/update-patient",async (req,res)=>{
   const {patientid,email,phone,address}=usrInp;
   try {
     const client=await pool.connect();
-    console.log("Connection Success uopd pat");
       try {
         await client.query('BEGIN');
        
@@ -480,11 +477,8 @@ app.post("/api/update-patient",async (req,res)=>{
 app.post("/api/delete-doctor",async (req,res)=>{
   const usrInp=req.body;
   const delDoctorid=usrInp.doctorid;
-  console.log(usrInp);
-  console.log("here");
   try {
     const client=await pool.connect();
-    console.log("Connection Success del doc");
       try {
         await client.query('BEGIN');
        
@@ -494,13 +488,11 @@ app.post("/api/delete-doctor",async (req,res)=>{
           WHERE doctorid=$1
         );
         `,[delDoctorid]);
-        console.log(nextRespnse);
         const response=await client.query(`
         DELETE FROM Doctor
         WHERE doctorid=$1
         ;
         `,[delDoctorid]);
-        console.log(response);
         await client.query('COMMIT');
         console.log("Transaction committed successfully!");
         res.send({done:true});
@@ -521,11 +513,8 @@ app.post("/api/delete-doctor",async (req,res)=>{
 app.post("/api/delete-patient",async (req,res)=>{
   const usrInp=req.body;
   const delPatientid=usrInp.patientid;
-  console.log(usrInp.patientid);
-  console.log("here");
   try {
     const client=await pool.connect();
-    console.log("Connection Success delpat");
       try {
         await client.query('BEGIN');
        
@@ -535,13 +524,11 @@ app.post("/api/delete-patient",async (req,res)=>{
           WHERE patientid=$1
         );
         `,[delPatientid]);
-        console.log(nextRespnse);
         const response=await client.query(`
         DELETE FROM Patient
         WHERE patientid=$1
         ;
         `,[delPatientid]);
-        console.log(response);
         await client.query('COMMIT');
         console.log("Transaction committed successfully!");
         res.send({done:true});
@@ -560,7 +547,6 @@ app.post("/api/delete-patient",async (req,res)=>{
 
 app.post("/api/appointment-delete",async (req,res)=>{
   const id=req.body;
-  console.log(id.appointmentid);
   try {
     const client=await pool.connect();
     console.log("Connection Success");
@@ -606,9 +592,6 @@ app.get("/api/book-fetch-specialization",async (req,res)=>{
 
 app.post("/api/book-fetch-doctor",async (req,res)=>{
   const user=req.user;
-  console.log(req.body);
-  console.log(req.body.specialization);
-  console.log("HERE");
   try {
     const client=await pool.connect();
     console.log("Connection Success");
@@ -618,7 +601,6 @@ app.post("/api/book-fetch-doctor",async (req,res)=>{
         WHERE specialization=$1
         `,[req.body.specialization]);
         const result=response.rows;
-        console.log(result);
         res.send(result);
       } catch (error) {
         console.log("Transaction not committed due to errors: " + error);
@@ -634,7 +616,6 @@ app.post("/api/book-fetch-doctor",async (req,res)=>{
 app.post("/api/post-appointment",async (req,res)=>{
     usrInp=req.body;
     getuser=req.user;
-    console.log(usrInp);
     const {doctorid,appointmentdate}=usrInp;
     const user=(getuser.username)||(getuser.id);
     const getpatientid=`
@@ -653,7 +634,6 @@ app.post("/api/post-appointment",async (req,res)=>{
         try {
           await client.query('BEGIN');
           const response=await client.query(getpatientid,[user]);
-          console.log(response.rows[0]);
           const patientid=response.rows[0].patientid;
           const secondquery=await client.query(insertappointmentquery,[doctorid,patientid,appointmentdate]);
           console.log("Query Success");
