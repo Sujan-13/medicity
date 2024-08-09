@@ -115,7 +115,7 @@ async function initialDb(){
           `)
 
           await client.query(`
-          CREATE TABLE session (
+          CREATE TABLE IF NOT EXISTS session (
             sid VARCHAR PRIMARY KEY,
             sess JSON NOT NULL,
             expire TIMESTAMP NOT NULL
