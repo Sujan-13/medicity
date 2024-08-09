@@ -28,10 +28,15 @@ async function initialDb(){
         console.log("Connection Success!");
         try {
           await client.query('BEGIN');
-          // await client.query(`
-          // DROP TABLE Appointment CASCADE;
-          // `);
-          
+      //     await client.query(`
+      //   DROP TABLE IF EXISTS Billing CASCADE;
+      //   DROP TABLE IF EXISTS Appointment CASCADE;
+      //   DROP TABLE IF EXISTS Doctor CASCADE;
+      //   DROP TABLE IF EXISTS Patient CASCADE;
+      //   DROP TABLE IF EXISTS users CASCADE;
+
+      // `);
+
           await client.query(`
           CREATE TABLE IF NOT EXISTS Doctor(
             DoctorID SERIAL PRIMARY KEY UNIQUE,
@@ -83,6 +88,14 @@ async function initialDb(){
           `);
 
           await client.query(`
+          CREATE TABLE IF NOT EXISTS users(
+            email TEXT PRIMARY KEY,
+            password TEXT,
+            usertype TEXT
+          );
+          `)
+
+          await client.query(`
           CREATE OR REPLACE FUNCTION insertbill()
           RETURNS TRIGGER AS $$
           BEGIN
@@ -95,11 +108,30 @@ async function initialDb(){
 
           await client.query(`
           CREATE OR REPLACE TRIGGER insertBills
-          BEFORE INSERT ON Appointment
+          AFTER INSERT ON Appointment
           FOR EACH ROW
           EXECUTE FUNCTION insertbill();
           `)
-    
+
+          await client.query(`
+          CREATE OR REPLACE FUNCTION insertIntoUsers()
+          RETURNS TRIGGER AS $$
+          BEGIN
+          INSERT INTO Users(email,password,usertype) VALUES
+          (NEW.Email,'$2b$10$eAEDUkty6.J4N2ftbt07AuJ1SF2ecrGjY5XDv8yz49jLtBmtOdP3S','doctor');
+          RETURN NEW;
+          END;
+          $$ LANGUAGE plpgsql;
+          `)
+
+          await client.query(`
+          CREATE OR REPLACE TRIGGER insertUsers
+          BEFORE INSERT ON Doctor
+          FOR EACH ROW
+          EXECUTE FUNCTION insertIntoUsers();
+          `)
+
+
           //  await client.query(`
           //  INSERT INTO Doctor (DoctorID, FirstName, LastName, Specialization, Email, Phone)
           //       VALUES
@@ -146,15 +178,6 @@ async function initialDb(){
           //       (336, 'Rajendra', 'Malla', 'Gastroenterology', 'rajendra.malla@example.com', '9892345678');
           //       `);
 
-
-          
-
-          await client.query(`
-          CREATE TABLE IF NOT EXISTS users(
-            email TEXT PRIMARY KEY,
-            password TEXT
-          );
-          `)
 
           // table_id INT DEFAULT 0 CHECK(table_id<2 AND table_id >=0) 
 

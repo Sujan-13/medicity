@@ -71,7 +71,7 @@ function Billing() {
                                 <td>{item.specialization}</td>
                                 <td>{item.appointmentdate}</td>
                                 <td>{item.amount}</td>
-                                <td style={{backgroundColor:item.billingstatus==="false"?"red":"green"}}></td>
+                                <td style={{backgroundColor:item.billingstatus==="false"?"red":"lightgreen"}}></td>
                                 <td>
                                 {item.billingstatus==="false" ? (
                                     <button className="side-btn"  value={item.billingid} onClick={handlePayment}>Pay</button>

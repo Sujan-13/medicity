@@ -10,6 +10,7 @@ function Appointment() {
         specialization:"",
         appointmentdate:""
     }]);
+
     const {data,error}=useFetchData("appointment-fetch-data");
 
     const navigate=useNavigate();
@@ -32,8 +33,9 @@ function Appointment() {
                     </tr>
                 </thead>
                 <tbody>
-                    {
+                    { 
                         appointment.map((item,index)=>{
+                            console.log("sdsa",item);
                             return(
                             <tr key={index}>
                                 <td>{index+1}</td>
@@ -48,7 +50,7 @@ function Appointment() {
                 </tbody>
                 </table>
             </div>
-          <Link to={"/dashboard/book"}><button className="side-btn">Book Appointment</button></Link>
+          <Link to={"/dashboard/book"}><button className="side-btn" style={{padding:"10px",margin:"auto",display:"block"}}>Book Appointment</button></Link>
         </div>
     );
 }

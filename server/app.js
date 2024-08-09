@@ -84,21 +84,21 @@ app.post("/api/signup",async (req,res)=>{
     const{firstname,lastname,dob,gender,address,phone,email}=usrInp;
     const password=await bcrypt.hash(usrInp.password,10);
     const userinsertQuery=`
-    INSERT INTO users VALUES
-    ($1::text,$2::text);
+    INSERT INTO users(email,password,usertype) VALUES
+    ($1::text,$2::text,$3::text);
     `;
 
     const patientInsertQuery=`
     INSERT INTO Patient(FirstName,LastName,DOB,gender,address,phone,email) VALUES
     ($1,$2,$3,$4,$5,$6,$7);
-    `
+    `;
 
     try {
       const client=await pool.connect();
       console.log("Connection Success");
         try {
           await client.query('BEGIN');
-          const query=await client.query(userinsertQuery,[email,password]);
+          const query=await client.query(userinsertQuery,[email,password,"patient"]);
           console.log("Query Success");
           const secondquery=await client.query(patientInsertQuery,[firstname,lastname,dob,gender,address,phone,email]);
           console.log("Query Success");
@@ -152,7 +152,7 @@ app.post('/api/login', (req, res, next) => {
 });
 
 app.get("/success",(req,res)=>{
-  res.send({"authenticated":true});           
+  res.send({"authenticated":true,"usertype":req.body.usertype});           
 
 })
 
@@ -169,6 +169,31 @@ app.get("/api/check-session",(req,res)=>{
     res.send({"authenticated":false});           
   }
 });
+
+app.get("/api/check-usertype",async (req,res)=>{
+  const user=req.user;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT usertype FROM Users
+        WHERE email=$1;
+        `,[(user.username)||(user.id)]);
+        const result=response.rows[0];
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+});
+
+
 
 app.get("/api/profile-fetch-data",async (req,res)=>{
   const user=req.user;
@@ -194,6 +219,72 @@ app.get("/api/profile-fetch-data",async (req,res)=>{
   }
 })
 
+app.get("/api/doctorprofile-fetch-data",async (req,res)=>{
+  const user=req.user;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT firstname,lastname,specialization,phone,email FROM Doctor
+        WHERE email=$1;
+        `,[(user.username)||(user.id)]);
+        const result=response.rows[0];
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.get("/api/alldoctor-fetch-data",async (req,res)=>{
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success alldopc fetch");
+      try {
+        const response=await client.query(`
+        SELECT doctorid,firstname,lastname,specialization,phone,email,salary FROM Doctor
+        `);
+        const result=response.rows;
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.get("/api/allpatient-fetch-data",async (req,res)=>{
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success allpatient-fetch");
+      try {
+        const response=await client.query(`
+        SELECT patientid,firstname,lastname,TO_CHAR(dob, 'YYYY-MM-DD') AS dob,phone,email,address FROM Patient
+        `);
+        const result=response.rows;
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+
 app.get("/api/appointment-fetch-data",async (req,res)=>{
   const user=req.user;
   try {
@@ -209,6 +300,36 @@ app.get("/api/appointment-fetch-data",async (req,res)=>{
           WHERE email=$1
         );
         `,[(user.username)||(user.id)]);
+        const result=response.rows;
+        res.send(result);
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.get("/api/doctorappointment-fetch-data",async (req,res)=>{
+  const user=req.user;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        SELECT firstname,lastname,TO_CHAR(appointmentdate, 'YYYY-MM-DD') AS appointmentdate, Appointment.AppointmentID FROM appointment
+        INNER JOIN patient
+        ON Appointment.patientid=Patient.patientid
+        INNER JOIN Billing
+        ON Billing.AppointmentID=Appointment.AppointmentID
+        WHERE doctorid=(
+          SELECT doctorid FROM doctor
+          WHERE email=$1) AND BillingStatus=$2
+          ;
+        `,[(user.username)||(user.id),'true']);
         const result=response.rows;
         res.send(result);
       } catch (error) {
@@ -265,6 +386,188 @@ app.post("/api/bill-update",async (req,res)=>{
         WHERE billingid=$1
         ;
         `,[(id.billingid)]);
+        res.send({done:true});
+      } catch (error) {
+        console.log("Transaction not committed due to errors: " + error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.post("/api/update-doctor",async (req,res)=>{
+  const usrInp=req.body;
+  const {doctorid,email,phone,salary}=usrInp;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success update-dioctor");
+      try {
+        await client.query('BEGIN');
+       
+        const nextRespnse= await client.query(`
+        UPDATE users
+        SET email=$1
+        WHERE email=(SELECT email FROM doctor
+          WHERE doctorid=$2
+        );
+        `,[email,doctorid]);
+        const response=await client.query(`
+        UPDATE Doctor
+        SET salary=$1,email=$2,phone=$3
+        WHERE doctorid=$4
+        ;
+        `,[salary,email,phone,doctorid]);
+        await client.query('COMMIT');
+        console.log("Transaction committed successfully!");
+        res.send({done:true});
+      } catch (error) {
+        await client.query('ROLLBACK');
+        console.log("Transaction not committed due to errors: " + error);
+        res.send(error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.post("/api/update-patient",async (req,res)=>{
+  const usrInp=req.body;
+  const {patientid,email,phone,address}=usrInp;
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success uopd pat");
+      try {
+        await client.query('BEGIN');
+       
+        const nextRespnse= await client.query(`
+        UPDATE users
+        SET email=$1
+        WHERE email=(SELECT email FROM Patient
+          WHERE patientid=$2
+        );
+        `,[email,patientid]);
+        const response=await client.query(`
+        UPDATE Patient
+        SET address=$1,email=$2,phone=$3
+        WHERE patientid=$4
+        ;
+        `,[address,email,phone,patientid]);
+        await client.query('COMMIT');
+        console.log("Transaction committed successfully!");
+        res.send({done:true});
+      } catch (error) {
+        await client.query('ROLLBACK');
+        console.log("Transaction not committed due to errors: " + error);
+        res.send(error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+
+app.post("/api/delete-doctor",async (req,res)=>{
+  const usrInp=req.body;
+  const delDoctorid=usrInp.doctorid;
+  console.log(usrInp);
+  console.log("here");
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success del doc");
+      try {
+        await client.query('BEGIN');
+       
+        const nextRespnse= await client.query(`
+        DELETE FROM users
+        WHERE email=(SELECT email FROM doctor
+          WHERE doctorid=$1
+        );
+        `,[delDoctorid]);
+        console.log(nextRespnse);
+        const response=await client.query(`
+        DELETE FROM Doctor
+        WHERE doctorid=$1
+        ;
+        `,[delDoctorid]);
+        console.log(response);
+        await client.query('COMMIT');
+        console.log("Transaction committed successfully!");
+        res.send({done:true});
+      } catch (error) {
+        await client.query('ROLLBACK');
+        console.log("Transaction not committed due to errors: " + error);
+        res.send(error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+
+app.post("/api/delete-patient",async (req,res)=>{
+  const usrInp=req.body;
+  const delPatientid=usrInp.patientid;
+  console.log(usrInp.patientid);
+  console.log("here");
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success delpat");
+      try {
+        await client.query('BEGIN');
+       
+        const nextRespnse= await client.query(`
+        DELETE FROM users
+        WHERE email=(SELECT email FROM Patient
+          WHERE patientid=$1
+        );
+        `,[delPatientid]);
+        console.log(nextRespnse);
+        const response=await client.query(`
+        DELETE FROM Patient
+        WHERE patientid=$1
+        ;
+        `,[delPatientid]);
+        console.log(response);
+        await client.query('COMMIT');
+        console.log("Transaction committed successfully!");
+        res.send({done:true});
+      } catch (error) {
+        await client.query('ROLLBACK');
+        console.log("Transaction not committed due to errors: " + error);
+        res.send(error);
+      } finally {
+        client.release();
+      }
+  } catch (error) {
+    console.error("Connection Error",error);
+     res.send("Connection Error",error);
+  }
+})
+
+app.post("/api/appointment-delete",async (req,res)=>{
+  const id=req.body;
+  console.log(id.appointmentid);
+  try {
+    const client=await pool.connect();
+    console.log("Connection Success");
+      try {
+        const response=await client.query(`
+        DELETE FROM Appointment
+        WHERE appointmentid=$1
+        ;
+        `,[(id.appointmentid)]);
         res.send({done:true});
       } catch (error) {
         console.log("Transaction not committed due to errors: " + error);

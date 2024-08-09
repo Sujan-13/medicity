@@ -8,6 +8,7 @@ import Nav from "../components/Nav";
 function Login(){
     const navigate=useNavigate();
     const [formData,SetformData]=useState({
+        usertype:"",
         email:"",
         password:""
     });
@@ -57,6 +58,15 @@ function Login(){
         </div>
         <h2>Welcome Back!</h2>
         <form class="main" onSubmit={handleSubmit}>
+        {/* <div className="form-group dashboard-form-text">
+        <label for="usertype">Choose Usertype:</label>
+        <select name="usertype" onChange={handleChange}>
+            <option value="0">--Usertype--</option>
+            <option value="patient">Patient</option>
+            <option value="doctor">Doctor</option>
+            <option value="admin">Admin</option>
+        </select>
+        </div> */}
             {items.map((item,index)=>{
                 const member=item[0].toLowerCase();
                 return(

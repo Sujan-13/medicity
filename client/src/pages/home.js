@@ -10,6 +10,11 @@ function Home(){
     <section class="hero">
         <div class="bg-image">
             <img src="https://images.unsplash.com/photo-1512102438733-bfa4ed29aef7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzR8fG1lZGljYWwlMjBob3NwaXRhbHxlbnwwfHwwfHx8MA%3D%3D" alt=""/>
+                    <div class="content">
+            <h1>Discover the best healthcare for you</h1>
+            <p>Book appointments, consult with doctors, and get personalized care</p>
+           <Link to={"/login"}><button class="book-btn">Book an appointment</button></Link>
+        </div>
         </div>
         <div class="doctor-search">
             <h1>Welcome to Medicity</h1>
@@ -35,11 +40,7 @@ function Home(){
         </div>
     </div>
         
-        <div class="content">
-            <h1>Discover the best healthcare for you</h1>
-            <p>Book appointments, consult with doctors, and get personalized care</p>
-           <Link to={"/login"}><button class="book-btn">Book an appointment</button></Link>
-        </div>
+
 
     </section>
     <Footer />

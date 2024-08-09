@@ -1,47 +1,66 @@
 .sidebar{
-    width: 20%;
-    position: fixed;
+    width: 20vw;
     min-height: 100vh;
-    background-color: #433D8B;
-    border: 5px solid gold;
-    overflow-y: auto;
-    /* position: relative; */
+    background-color: #27225b;
+    text-align: right;
     li{
         list-style-type: none;
     }
-
+    flex: 20%;
+    overflow-y: auto;
 }
 
 .sidebar-content{
+    padding: 0px 16px 0px 30px;
+    width: inherit;
+    position: fixed;
 
 }
-
-
-.side-btn{
-    padding: 10px 20px;
-    background-color: #433D8B;
+.side-btns{
+    background-color: #27225b;
     color: #fff;
     width: 100%;
-    height: 50px;
+    height: 60px;
     border-style: none;
     border-bottom: 2px solid gold;
-    padding: 8px 20px;
+    padding: 30px 5px 1px 0px;
     cursor: pointer;
+    text-align: right;
+    font-size: 18px;
     &:hover{
-        background-color: rgb(37, 143, 37);
-        color: #fff;
+        background-color: inherit;
+        color: gold;
+        font-weight: bold;
+    }
+}
+
+.side-btn{
+    background-color: inherit;
+    color: gold;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    border: 1px solid gold;
+    padding: 0px 15px;
+    background-color: #433b9b;
+    &:hover{
+        background-color: #2d248b;
+        font-weight: bolder;
+        cursor:pointer;
+        color:white;
     }
 }
 
 .dashboard-container{
     display: flex;
+    
 }
 
 .dashboard-form{
-    margin-left: 20%;
-    overflow-y: auto;
-    padding: 50px;
+    padding: 50px 10px;
     width: 80%;
+    flex:80%;
+    overflow-y: auto;
     
 
 }
