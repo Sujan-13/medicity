@@ -4,7 +4,7 @@ const useSessionManagement = (navigate, route, secondRoute) => {
   useEffect(() => {
     const sessionManagement = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/check-session", {
+        const response = await fetch("/api/check-session", {
           method: "GET",
           credentials: "include",
         });

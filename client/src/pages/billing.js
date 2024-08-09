@@ -27,7 +27,7 @@ function Billing() {
             "billingid":e.target.value
         }
         try {
-            const response= await fetch("http://localhost:3001/api/bill-update",{
+            const response= await fetch("/api/bill-update",{
               method:"POST",
               credentials: 'include',
               headers:{

@@ -16,7 +16,7 @@ import { useState,useEffect } from "react";
 useEffect(()=>{
     const fetchData=async ()=>{
         try { 
-            const response = await fetch("http://localhost:3001/api/doctorprofile-fetch-data", {
+            const response = await fetch("/api/doctorprofile-fetch-data", {
             method: "GET",
             credentials: "include",
           });

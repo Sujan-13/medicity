@@ -40,7 +40,7 @@ function Book() {
     useEffect(()=>{
         const fetchData= async ()=>{
             try {
-                const response= await fetch("http://localhost:3001/api/book-fetch-doctor",{
+                const response= await fetch("/api/book-fetch-doctor",{
                   method:"POST",
                   credentials: 'include',
                   headers:{
@@ -86,7 +86,7 @@ function Book() {
     async function handleSubmit(e) {
         e.preventDefault();
             try {
-              const response= await fetch("http://localhost:3001/api/post-appointment",{
+              const response= await fetch("/api/post-appointment",{
                 method:"POST",
                 credentials: 'include',
                 headers:{

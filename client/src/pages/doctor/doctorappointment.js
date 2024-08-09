@@ -25,7 +25,7 @@ function DoctorAppointment() {
             "appointmentid":e.target.value
         }
         try {
-            const response= await fetch("http://localhost:3001/api/appointment-delete",{
+            const response= await fetch("/api/appointment-delete",{
               method:"POST",
               credentials: 'include',
               headers:{

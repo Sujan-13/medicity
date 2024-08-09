@@ -13,7 +13,7 @@ function AdminDashboard(){
         
             const logOut=async ()=>{
                 try {
-                    const response= await fetch("http://localhost:3001/api/logout",{
+                    const response= await fetch("/api/logout",{
                         "method":"GET",
                         credentials:'include'
                     });

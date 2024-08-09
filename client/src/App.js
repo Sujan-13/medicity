@@ -26,7 +26,7 @@ function App() {
   useEffect(()=>{
     const checkuserType=async ()=>{
       try {
-        const response = await fetch("http://localhost:3001/api/check-usertype", {
+        const response = await fetch("/api/check-usertype", {
           method: "GET",
           credentials: "include",
         });

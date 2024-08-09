@@ -19,7 +19,7 @@
     useEffect(()=>{
         const fetchData=async ()=>{
             try { 
-                const response = await fetch("http://localhost:3001/api/profile-fetch-data", {
+                const response = await fetch("/api/profile-fetch-data", {
                 method: "GET",
                 credentials: "include",
               });

@@ -60,7 +60,7 @@ function Signup() {
         e.preventDefault();
         if(validatePassword===''){
         try {
-          const response= await fetch("http://localhost:3001/api/signup",{
+          const response= await fetch("/api/signup",{
             method:"POST",
             credentials: 'include',
             headers:{

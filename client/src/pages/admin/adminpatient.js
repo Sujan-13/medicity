@@ -28,7 +28,7 @@ function AdminPatient() {
     useEffect(()=>{
         const fetchData=async ()=>{
             try { 
-                const response = await fetch("http://localhost:3001/api/allpatient-fetch-data", {
+                const response = await fetch("/api/allpatient-fetch-data", {
                 method: "GET",
                 credentials: "include",
               });
@@ -63,7 +63,7 @@ function AdminPatient() {
     async function handleUpdate() {
         if(startEdit.edit){
         try {
-            const response= await fetch("http://localhost:3001/api/update-patient",{
+            const response= await fetch("/api/update-patient",{
               method:"POST",
               credentials: 'include',
               headers:{
@@ -92,7 +92,7 @@ function AdminPatient() {
         };
         setIsDel(true);
         try {
-            const response= await fetch("http://localhost:3001/api/delete-patient",{
+            const response= await fetch("/api/delete-patient",{
               method:"POST",
               credentials: 'include',
               headers:{

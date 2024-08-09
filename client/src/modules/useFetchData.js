@@ -5,7 +5,7 @@ const useFetchData=(apiEndpoint)=>{
     const [error,setError]=useState(null);
     useEffect(()=>{
         const fetchData=async ()=>{
-                const route="http://localhost:3001/api/"+apiEndpoint;
+                const route="/api/"+apiEndpoint;
                 
             try { 
                     const response = await fetch(route , {

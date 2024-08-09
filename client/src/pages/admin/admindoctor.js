@@ -28,7 +28,7 @@ function AdminDoctor() {
     useEffect(()=>{
         const fetchData=async ()=>{
             try { 
-                const response = await fetch("http://localhost:3001/api/alldoctor-fetch-data", {
+                const response = await fetch("/api/alldoctor-fetch-data", {
                 method: "GET",
                 credentials: "include",
               });
@@ -63,7 +63,7 @@ function AdminDoctor() {
     async function handleUpdate() {
         if(startEdit.edit){
         try {
-            const response= await fetch("http://localhost:3001/api/update-doctor",{
+            const response= await fetch("/api/update-doctor",{
               method:"POST",
               credentials: 'include',
               headers:{
@@ -92,7 +92,7 @@ function AdminDoctor() {
         };
         setIsDel(true);
         try {
-            const response= await fetch("http://localhost:3001/api/delete-doctor",{
+            const response= await fetch("/api/delete-doctor",{
               method:"POST",
               credentials: 'include',
               headers:{

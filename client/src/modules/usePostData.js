@@ -5,7 +5,7 @@ const usePostData=(apiEndpoint,formData)=>{
     const [error,setError]=useState(null);
     useEffect(()=>{
         const fetchData=async ()=>{
-                const route="http://localhost:3001/api/"+apiEndpoint;
+                const route="/api/"+apiEndpoint;
                 console.log(route,formData);
                 console.log("HERE");
             try { 

@@ -25,7 +25,7 @@ function Login(){
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            const response= await fetch("http://localhost:3001/api/login",{
+            const response= await fetch("/api/login",{
                 method:"POST",
                 credentials: 'include',
                 headers:{
