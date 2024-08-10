@@ -63,6 +63,7 @@
 .doctor{
     width: 200px;
     height: 100%;
+    flex:1;
     img{
         width: 150px;
         height: 150px;
@@ -105,5 +106,12 @@
             background-color: rgb(37, 143, 37);
             color: #fff;
         }
+    }
+}
+
+@media(max-width:950px){
+    .doctors{
+        flex-direction: column;
+        height: fit-content;
     }
 }

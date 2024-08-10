@@ -91,3 +91,10 @@
         font-size: medium;
     }
 }
+
+@media(max-width:960px){
+    .sidebar{
+        min-width: 30vw;
+        max-width: 20vh;
+    }
+}
