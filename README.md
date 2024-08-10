@@ -45,15 +45,15 @@ https://medicity.onrender.com/
 NOTE: On render it may take upto 50s for site to load.
 
 
-## Usage/Examples
+## Usage
 
-```javascript
+```
+
 ---Patient---
 1.Sign up or log in to access the dashboard.
 
 2.Use the navigation menu to access different 
 sections like Appointments or Billings.
-
 
 ---Doctor---
 1.Get any doctor's email through api. Usually doctor data is hardcoded by the hospital. 
@@ -66,14 +66,15 @@ sections like Appointments or Billings.
 
 5. Only Appointments which have been paid through billings show up.
 
-
 ---Admin---
 1. login via admin@admin and password as "1@aA2345"
 
 2. You can view all Doctors and Patients from admin dashboard
 
 3. You can add new doctors as well as edit current doctors or even delete records
+------------
 
+```
 
 
 ## API Reference
