@@ -196,7 +196,7 @@ NOTE: On render it may take upto 50s for site to load.
 
 **Frontend(html,css):** Dipesh Chaudhary 
 
-**Database Queries:** Subrat Dhital
+**Database Queries and Project Reports:** Subrat Dhital
 
 **React & Backend:** Sujan Gupta 
 
