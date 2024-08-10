@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Formbody from "../../components/Formbody";
 import { Link } from "react-router-dom";
 import useFetchData from "../../modules/useFetchData";
 function AdminDoctor() {
@@ -14,6 +15,17 @@ function AdminDoctor() {
         salary:""
     }]);
 
+    const items=[["FirstName","text"],["LastName","text"], ["Specialization","text"],["Address","text"],["Phone","text"], ["Email","email"],["Salary","text"]];
+
+    const [insertFormData, SetInsertFormData]=useState({
+        firstname:"",
+        lastname:"",
+        specialization:"",
+        phone:"",
+        email:"",
+        salary:""
+    });
+
     const [startEdit,setStartEdit]=useState({
         "edit":false,
         doctorid:"",
@@ -23,7 +35,7 @@ function AdminDoctor() {
     });
 
     const [isDel,setIsDel]=useState(false);
-
+    const [addDoc,setAddDoc]=useState(false);
 
     useEffect(()=>{
         const fetchData=async ()=>{
@@ -41,15 +53,27 @@ function AdminDoctor() {
             }
         }
         fetchData();
-    },[navigate,startEdit,isDel]);
+    },[navigate,startEdit,isDel,addDoc]);
 
     function handleChange(e){
         const {name,value}=e.target;
+        
         setStartEdit({
             ...startEdit,
             [name]:value
         });
+
     }
+
+    function handleInsertChange(e) {
+        const {name,value}=e.target;
+
+        SetInsertFormData({
+            ...insertFormData,
+            [name]:value
+        });
+    }
+    
 
     function handleEdit(e) {
             const {name,value}=e.currentTarget;
@@ -111,10 +135,67 @@ function AdminDoctor() {
           setIsDel(false);
     };
 
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        try {
+            const response= await fetch("/api/add-doctor",{
+              method:"POST",
+              credentials: 'include',
+              headers:{
+                "Content-type":"application/json"
+              },
+              body:JSON.stringify(insertFormData)
+            });
+              const result= await response.json();
+              console.log(result);
+              if (result.done) {
+                navigate("/dashboard/doctor");
+              }
+          } catch (error) {
+              console.error("Error",error);
+          }
+          finally{
+            setAddDoc(!addDoc);
+            SetInsertFormData({
+                firstname:"",
+                lastname:"",
+                specialization:"",
+                phone:"",
+                email:"",
+                salary:""
+            });
+          }
+    };
+
     return(
         <div>
             <div>
-           {!formData?(<h2>No doctors...</h2>):
+
+            <button className="side-btn" style={{padding:"10px",margin:"auto",display:"block", marginBottom:"10px"}} onClick={()=>{setAddDoc(!addDoc)}} >{!addDoc?"Add Doctor":"Go back"}</button>
+                {addDoc &&
+                <main>
+                <div class="logo">
+                <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTOIsLtdQPu_wKkuK2cptqnjlgvV1kKeWLF7Ki6HKvqTpZVglh-" alt="" />
+               </div>
+                 <h2>Add Doctor:</h2>
+
+                    <form class="main" onSubmit={handleSubmit}>
+                      
+                        {items.map((item,index)=>{
+                            var member=(item[0].toLowerCase());      
+                            return(                          
+                             <div>
+                            <Formbody key={index} field={item[0]} name={member} type={item[1]} value={insertFormData[member]} handleChange={handleInsertChange} />
+                             </div>
+                            );
+                        })}
+                        
+                        <input type="submit" value="Add doctor" class="login"/>
+                     </form>
+                     </main>
+                }
+           {!formData?(<h2>No doctors...</h2>):!addDoc &&
                  <table>
                 <thead>
                     <tr>
@@ -159,6 +240,7 @@ function AdminDoctor() {
                     }
                 </tbody>
                 </table>}
+                
             </div>
         </div>
     );

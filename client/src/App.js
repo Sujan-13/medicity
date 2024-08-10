@@ -21,7 +21,7 @@ function App() {
   const navigate=useNavigate();
   const [usertype,setUsertype]=useState(""||null);
 
-  useSessionManagement(navigate, "/dashboard", "/");
+  useSessionManagement(navigate, "/dashboard", "/login");
 
   useEffect(()=>{
     const checkuserType=async ()=>{

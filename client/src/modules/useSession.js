@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const useSessionManagement = (navigate, route, secondRoute) => {
+const useSessionManagement = (navigate, route, secondRoute, interval = 2000) => {
+  const Location=useLocation();
   useEffect(() => {
     const sessionManagement = async () => {
       try {
@@ -9,11 +11,16 @@ const useSessionManagement = (navigate, route, secondRoute) => {
           credentials: "include",
         });
         const result = await response.json();
-        if (result.authenticated) {
+        console.log(result);
+        if (result.authenticated ) {
+          if(Location.pathname==="/login" || Location.pathname==="/signup" ){
           navigate(route);
+          }
         }
         if (!result.authenticated) {
-          navigate(secondRoute)
+          if(Location.pathname!=="/"){
+          navigate(secondRoute);
+          }
         }
         console.log(result);
       } catch (error) {
@@ -21,6 +28,8 @@ const useSessionManagement = (navigate, route, secondRoute) => {
       }
     };
     sessionManagement();
+    const intervalId = setInterval(sessionManagement, interval);
+    return () => clearInterval(intervalId);
   }, []);
 };
 

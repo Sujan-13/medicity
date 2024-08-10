@@ -242,6 +242,39 @@ app.get("/api/doctorprofile-fetch-data",async (req,res)=>{
     console.error("Connection Error",error);
      res.send("Connection Error",error);
   }
+});
+
+app.post("/api/add-doctor",async (req,res)=>{
+  const user=req.user;
+  const id=user.id || user.username;
+  console.log(req.body,id,id==="admin@admin");
+
+  if (id==="admin@admin") {
+    const {firstname,lastname,specialization,email,phone}=req.body;
+    try {
+      const client=await pool.connect();
+      console.log("Connection Success");
+        try {
+          const response=await client.query(`
+          INSERT INTO Doctor (FirstName, LastName, Specialization, Email, Phone)
+          VALUES($1,$2,$3,$4,$5)
+          `,[firstname,lastname,specialization,email,phone]);
+          const result=response.rows;
+          res.send(result);
+        } catch (error) {
+          console.log("Transaction not committed due to errors: " + error);
+        } finally {
+          client.release();
+        }
+    } catch (error) {
+      console.error("Connection Error",error);
+       res.send("Connection Error",error);
+    }
+  }
+  else{
+    res.send("Not authorised...");
+  }
+  
 })
 
 app.get("/api/alldoctor-fetch-data",async (req,res)=>{
